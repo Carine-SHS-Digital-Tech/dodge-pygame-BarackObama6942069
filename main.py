@@ -22,7 +22,21 @@ class FallingObjects(pygame.sprite.Sprite):
         if self.rect.y <= 470:
             self.rect.y = self.rect.y + distance
 
+    def deleteFallingObjects(self):
+        if self.rect.y > 470:
+            self.kill()
 
+class Character(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([50,68])
+        self.image.set_colorkey(black)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = 310
+        self.rect.y = 420
+
+        self.image.blit(pygame.image.load("Superhero.png"),(0,0))
 
 pygame.init()                               # Pygame is initialised (starts running)
 
@@ -40,6 +54,10 @@ allFallingObjects = pygame.sprite.Group()
 
 nextApple = pygame.time.get_ticks() + 2500
 
+charactersGroup = pygame.sprite.Group()
+character = Character()
+charactersGroup.add(character)
+
 # -------- Main Program Loop -----------
 while done == False:
 
@@ -49,16 +67,20 @@ while done == False:
 
     # Update sprites here
     if pygame.time.get_ticks() > nextApple:
-    nextObject = FallingObjects()
-    nextObject.setImage("Apple.png")
-    allFallingObjects.add(nextObject)
-    nextApple = pygame.time.get_ticks() + 1500
+        nextObject = FallingObjects()
+        nextObject.setImage("Apple.png")
+        allFallingObjects.add(nextObject)
+        nextApple = pygame.time.get_ticks() + 1500
 
     for eachObject in (allFallingObjects.sprites()):
         eachObject.moveFallingObjects(5)
 
+
+        eachObject.deleteFallingObjects()
+
     screen.blit(background_image, [0,0])
     allFallingObjects.draw(screen)
+    charactersGroup.draw(screen)
     pygame.display.flip()                   # Go ahead and update the screen with what we've drawn.
     clock.tick(20)                          # Limit to 20 frames per second
 
